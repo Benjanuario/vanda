@@ -2,21 +2,21 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fatura - Loja Sistema</title>
-<link rel="stylesheet" href="assets/styles.css">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faturas</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-    <h1>Faturas</h1>
-    <div class="table-container card">
-        <table id="tabela-vendas">
-            <thead><tr><th>ID</th><th>Data</th><th>Total</th><th>Ações</th></tr></thead>
-            <tbody></tbody>
-        </table>
-    </div>
+  <h1>Faturas Emitidas</h1>
+  <div class="card" style="margin-top:16px;">
+    <table id="tabela-vendas">
+      <thead><tr><th>#</th><th>Data</th><th>Total</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <a href="index.html"><button style="margin-top:16px;">Voltar ao Menu</button></a>
 </div>
-<script src="scripts/storage.js"></script>
-<script src="scripts/factura.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
