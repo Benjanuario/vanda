@@ -1,203 +1,259 @@
-// script.js - Sistema de Loja
+// ----------------------------
+// CONFIGURAÇÃO
+// ----------------------------
+const API_URL = "COLE_AQUI_A_URL_DO_SEU_WEB_APP";
 
-// --- Chaves localStorage ---
-const LS_KEYS = { PROD:'sg_produtos_v2', VEND:'sg_vendas_v2', CONF:'sg_conf_v2' };
-
-// --- Dados ---
-let produtos = JSON.parse(localStorage.getItem(LS_KEYS.PROD) || '[]');
-let vendas = JSON.parse(localStorage.getItem(LS_KEYS.VEND) || '[]');
-let conf = JSON.parse(localStorage.getItem(LS_KEYS.CONF) || '{}');
+// Dados locais
+let produtos = [];
 let carrinho = [];
+let vendas = [];
+let configuracoes = {};
 
-// --- Utils ---
-const $ = id=>document.getElementById(id);
-const money = v=>Number(v||0).toFixed(2);
+// ----------------------------
+// FUNÇÕES DE API
+// ----------------------------
 
-// --- Inicialização ---
-function init(){
-    if(conf.nome) $('nome-loja')?.value = conf.nome;
-    $('endereco')?.value = conf.endereco || '';
-    $('telefone')?.value = conf.telefone || '';
-    if(conf.logo) showLogo(conf.logo);
-    renderEstoque(); renderProdutosLista(); renderCarrinho(); renderVendas(); updateTotals();
+// Buscar produtos do Google Sheets
+async function fetchProdutos() {
+  const res = await fetch(`${API_URL}?action=getProdutos`);
+  produtos = await res.json();
+  renderEstoque();
+  renderProdutosLista();
 }
 
-// --- Produtos ---
-function addProduto(nome, preco, qtd, sku){
-    if(!nome || preco<=0){alert('Nome e preço obrigatórios'); return;}
-    const id = Date.now();
-    produtos.push({id,nome,preco,qtd,sku});
-    localStorage.setItem(LS_KEYS.PROD,JSON.stringify(produtos));
-    renderEstoque(); renderProdutosLista();
+// Adicionar venda
+async function enviarVenda(venda) {
+  await fetch(`${API_URL}?action=addVenda`, {
+    method: "POST",
+    body: JSON.stringify(venda),
+  });
 }
 
-function renderEstoque(){
-    const tbody = $('tabela-estoque')?.querySelector('tbody'); if(!tbody) return;
-    tbody.innerHTML='';
-    produtos.forEach(p=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${p.nome}<div class="muted small">${p.sku||''}</div></td>
-        <td>${money(p.preco)}</td><td>${p.qtd}</td>
-        <td class="right"><div class="actions">
-            <button onclick='editProd(${p.id})'>Editar</button>
-            <button onclick='delProd(${p.id})'>Apagar</button>
-        </div></td>`;
-        tbody.appendChild(tr);
-    });
+// Buscar configurações
+async function fetchConfiguracoes() {
+  const res = await fetch(`${API_URL}?action=getConfiguracoes`);
+  configuracoes = await res.json();
 }
 
-window.delProd = id=>{
-    if(!confirm('Apagar produto?')) return;
-    produtos = produtos.filter(p=>p.id!==id);
-    localStorage.setItem(LS_KEYS.PROD,JSON.stringify(produtos));
-    renderEstoque(); renderProdutosLista();
-}
-window.editProd = id=>{
-    const p = produtos.find(x=>x.id===id); if(!p) return;
-    const nome = prompt('Nome:',p.nome); if(!nome) return;
-    const preco = parseFloat(prompt('Preço:',p.preco)||p.preco);
-    const qtd = parseInt(prompt('Quantidade:',p.qtd)||p.qtd);
-    p.nome=nome; p.preco=preco; p.qtd=qtd;
-    localStorage.setItem(LS_KEYS.PROD,JSON.stringify(produtos));
-    renderEstoque(); renderProdutosLista();
-}
-
-// --- Lista de produtos para venda ---
-function renderProdutosLista(filter=''){
-    const tbody = $('tabela-produtos')?.querySelector('tbody'); if(!tbody) return;
-    const q = filter.trim().toLowerCase();
-    tbody.innerHTML='';
-    produtos.filter(p=>p.nome.toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q)).forEach(p=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${p.nome}</td>
-        <td>${money(p.preco)}</td>
-        <td>${p.qtd}</td>
-        <td class="right">
-            <input type="number" min="1" max="${p.qtd}" value="1" style="width:60px;" id="qt-${p.id}">
-            <input type="number" min="0" value="${p.preco}" style="width:80px;" id="price-${p.id}">
-            <button onclick='addToCart(${p.id})'>+</button>
-        </td>`;
-        tbody.appendChild(tr);
-    });
+// ----------------------------
+// PRODUTOS
+// ----------------------------
+function renderEstoque() {
+  const tbody = document.querySelector('#tabela-estoque tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  produtos.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.nome}</td>
+      <td>${Number(p.preco).toFixed(2)}</td>
+      <td>${p.quantidade}</td>
+      <td>
+        <button class="btn" onclick="editarProduto('${p.id}')">Editar</button>
+        <button class="btn" onclick="removerProduto('${p.id}')">Apagar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
-// --- Carrinho ---
-window.addToCart = id=>{
-    const p = produtos.find(x=>x.id===id); if(!p) return;
-    const qtd = parseInt($(`qt-${id}`).value || 1);
-    let preco = parseFloat($(`price-${id}`).value || p.preco);
-    if(qtd>p.qtd){alert('Sem stock suficiente'); return;}
-    const item = carrinho.find(c=>c.id===id);
-    if(item){ item.qtd+=qtd; item.preco=preco; } 
-    else{ carrinho.push({id:p.id,nome:p.nome,preco,qtd}); }
-    renderCarrinho(); updateTotals();
+function renderProdutosLista(filter='') {
+  const tbody = document.querySelector('#tabela-produtos tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  produtos.filter(p => p.nome.toLowerCase().includes(filter.toLowerCase())).forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.nome}</td>
+      <td>${Number(p.preco).toFixed(2)}</td>
+      <td>${p.quantidade}</td>
+      <td><button class="btn" onclick="addToCart('${p.id}')">+</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
-function renderCarrinho(){
-    const tbody = $('tabela-carrinho')?.querySelector('tbody'); if(!tbody) return;
-    tbody.innerHTML='';
-    carrinho.forEach(item=>{
-        const tr = document.createElement('tr');
-        const subtotal = item.qtd*item.preco;
-        tr.innerHTML = `<td>${item.nome}</td>
-        <td>${money(item.preco)}</td>
-        <td><input type="number" min="1" value="${item.qtd}" onchange="changeQty(${item.id},this.value)"></td>
-        <td>${money(subtotal)}</td>
-        <td class="right"><button onclick="removeCart(${item.id})">Remover</button></td>`;
-        tbody.appendChild(tr);
-    });
+// ----------------------------
+// CARRINHO
+// ----------------------------
+function addToCart(id) {
+  const produto = produtos.find(p => p.id == id);
+  if (!produto) return;
+  const item = carrinho.find(c => c.id == id);
+  if (item) {
+    if (item.qtd + 1 > produto.quantidade) { alert('Sem stock suficiente'); return; }
+    item.qtd += 1;
+  } else {
+    carrinho.push({ ...produto, qtd: 1 });
+  }
+  renderCarrinho();
+  updateTotals();
 }
 
-window.changeQty = (id,val)=>{
-    const item = carrinho.find(c=>c.id===id); if(!item) return;
-    const p = produtos.find(x=>x.id===id);
-    const qtd = parseInt(val||1);
-    if(qtd>p.qtd){alert('Quantidade maior que stock'); renderCarrinho(); return;}
-    item.qtd = qtd; renderCarrinho(); updateTotals();
+function renderCarrinho() {
+  const tbody = document.querySelector('#tabela-carrinho tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  carrinho.forEach(item => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${item.nome}</td>
+      <td><input type="number" value="${item.qtd}" min="1" onchange="changeQty('${item.id}', this.value)"></td>
+      <td>${Number(item.preco).toFixed(2)}</td>
+      <td>${(item.qtd*item.preco).toFixed(2)}</td>
+      <td><button class="btn" onclick="removeCart('${item.id}')">Remover</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
-window.removeCart = id=>{
-    carrinho = carrinho.filter(c=>c.id!==id); renderCarrinho(); updateTotals();
-              }
-function updateTotals(){
-    const subtotal = carrinho.reduce((s,i)=>s+i.qtd*i.preco,0);
-    const taxaPerc = parseFloat($('taxa')?.value || 0);
-    const taxa = subtotal * (taxaPerc/100);
-    const total = subtotal + taxa;
-    if($('subtotal')) $('subtotal').innerText = money(subtotal);
-    if($('valor-taxa')) $('valor-taxa').innerText = money(taxa);
-    if($('total')) $('total').innerText = money(total);
+function changeQty(id, val) {
+  const item = carrinho.find(c => c.id == id);
+  if (!item) return;
+  const produto = produtos.find(p => p.id == id);
+  if (val > produto.quantidade) { alert('Quantidade maior que stock'); renderCarrinho(); return; }
+  item.qtd = Number(val);
+  renderCarrinho();
+  updateTotals();
 }
 
-// --- Modal Resumo / Fatura ---
-function openResumoCompra(){
-    const modal = $('modal');
-    const content = modal.querySelector('.content');
-    modal.style.display='flex';
-    let html = `<h3>Resumo da Compra</h3><table style="width:100%;border-collapse:collapse;"><thead>
-<tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th></tr></thead><tbody>`;
-    carrinho.forEach(item=>{
-        html+=`<tr><td>${item.nome}</td><td>${item.qtd}</td><td>${money(item.preco)}</td><td>${money(item.qtd*item.preco)}</td></tr>`;
-    });
-    const subtotal = carrinho.reduce((s,i)=>s+i.qtd*i.preco,0);
-    const taxaPerc = parseFloat($('taxa')?.value || 0);
-    const taxa = subtotal * (taxaPerc/100);
-    const total = subtotal + taxa;
-    html+=`</tbody></table><div>Subtotal: ${money(subtotal)}</div><div>Taxa: ${money(taxa)}</div><div>Total: ${money(total)}</div>
-<button onclick='confirmarCompra()'>Confirmar Compra</button> <button onclick='closeModal()'>Cancelar</button>`;
-    content.innerHTML = html;
+function removeCart(id) {
+  carrinho = carrinho.filter(c => c.id != id);
+  renderCarrinho();
+  updateTotals();
 }
 
-function closeModal(){
-    $('modal').style.display='none';
+// ----------------------------
+// TOTAIS
+// ----------------------------
+function updateTotals() {
+  const subtotal = carrinho.reduce((acc, c) => acc + c.qtd * c.preco, 0);
+  const taxa = subtotal * 0.17; // 17% IVA fixo
+  const total = subtotal + taxa;
+  const elSub = document.getElementById('subtotal');
+  const elTaxa = document.getElementById('taxa');
+  const elTotal = document.getElementById('total');
+  if(elSub) elSub.innerText = subtotal.toFixed(2);
+  if(elTaxa) elTaxa.innerText = taxa.toFixed(2);
+  if(elTotal) elTotal.innerText = total.toFixed(2);
 }
 
-function confirmarCompra(){
-    const data = new Date().toISOString();
-    const venda = {id:Date.now(),data,items:[...carrinho],subtotal:carrinho.reduce((s,i)=>s+i.qtd*i.preco,0)};
-    vendas.push(venda);
-    localStorage.setItem(LS_KEYS.VEND,JSON.stringify(vendas));
-    carrinho = [];
-    renderCarrinho(); updateTotals();
-    closeModal();
-    alert('Compra confirmada!');
-    renderVendas();
+// ----------------------------
+// FINALIZAR COMPRA
+// ----------------------------
+async function finalizarCompra() {
+  if(carrinho.length === 0) { alert('Carrinho vazio'); return; }
+  const cliente = prompt('Nome do cliente:', 'Consumidor final') || 'Consumidor final';
+  const subtotal = parseFloat(document.getElementById('subtotal').innerText);
+  const taxa = parseFloat(document.getElementById('taxa').innerText);
+  const total = parseFloat(document.getElementById('total').innerText);
+  const venda = {
+    id: Date.now().toString(),
+    data: new Date().toISOString(),
+    cliente,
+    produtos: carrinho,
+    subtotal,
+    taxa,
+    total
+  };
+  await enviarVenda(venda);
+  vendas.push(venda);
+  // Atualizar stock
+  carrinho.forEach(item => {
+    const produto = produtos.find(p => p.id == item.id);
+    if(produto) produto.quantidade -= item.qtd;
+  });
+  carrinho = [];
+  renderEstoque();
+  renderCarrinho();
+  updateTotals();
+  alert('Venda registrada com sucesso!');
+  abrirFatura(venda);
 }
 
-function renderVendas(){
-    const tbody = $('tabela-vendas')?.querySelector('tbody'); if(!tbody) return;
-    tbody.innerHTML='';
-    vendas.slice().reverse().forEach(v=>{
-        const tr = document.createElement('tr');
-        tr.innerHTML=`<td>${v.id}</td><td>${new Date(v.data).toLocaleString()}</td><td>${money(v.items.reduce((s,i)=>s+i.qtd*i.preco,0))}</td><td><button onclick='viewVenda(${v.id})'>Ver</button></td>`;
-        tbody.appendChild(tr);
-    });
+// ----------------------------
+// FATURA
+// ----------------------------
+function abrirFatura(venda) {
+  let html = `<h2>Fatura Nº: ${venda.id}</h2>`;
+  html += `<p>Cliente: ${venda.cliente}</p>`;
+  html += `<p>Data: ${new Date(venda.data).toLocaleString()}</p>`;
+  html += `<table border="1" cellpadding="6"><thead><tr><th>Produto</th><th>Qtd</th><th>Preço</th><th>Subtotal</th></tr></thead><tbody>`;
+  venda.produtos.forEach(item => {
+    html += `<tr>
+      <td>${item.nome}</td>
+      <td>${item.qtd}</td>
+      <td>${item.preco.toFixed(2)}</td>
+      <td>${(item.qtd*item.preco).toFixed(2)}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+  html += `<p>Subtotal: ${venda.subtotal.toFixed(2)}</p>`;
+  html += `<p>Taxa: ${venda.taxa.toFixed(2)}</p>`;
+  html += `<p>Total: ${venda.total.toFixed(2)}</p>`;
+  const w = window.open("", "_blank");
+  w.document.write(html);
+  w.document.close();
 }
 
-function viewVenda(id){
-    const v = vendas.find(x=>x.id===id); if(!v) return;
-    carrinho = [...v.items];
-    openResumoCompra();
+// ----------------------------
+// PRODUTOS CRUD SIMPLES (local, futuramente API)
+// ----------------------------
+function editarProduto(id) {
+  const produto = produtos.find(p => p.id == id);
+  if(!produto) return;
+  const nome = prompt('Nome:', produto.nome);
+  if(!nome) return;
+  const preco = parseFloat(prompt('Preço:', produto.preco));
+  const qtd = parseInt(prompt('Quantidade:', produto.quantidade));
+  produto.nome = nome;
+  produto.preco = preco;
+  produto.quantidade = qtd;
+  renderEstoque();
+  renderProdutosLista();
 }
 
-// --- Configurações / Logo ---
-$('logoBox')?.addEventListener('click',()=>$('logoInput')?.click());
-$('logoInput')?.addEventListener('change',e=>{
-    const file = e.target.files[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload=ev=>{conf.logo=ev.target.result; localStorage.setItem(LS_KEYS.CONF,JSON.stringify(conf)); showLogo(conf.logo)};
-    reader.readAsDataURL(file);
+function removerProduto(id) {
+  if(!confirm('Deseja realmente remover?')) return;
+  produtos = produtos.filter(p => p.id != id);
+  renderEstoque();
+  renderProdutosLista();
+}
+
+// ----------------------------
+// VENDAS
+// ----------------------------
+function renderVendas() {
+  const tbody = document.querySelector('#tabela-vendas tbody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  vendas.slice().reverse().forEach(v => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${v.id}</td>
+      <td>${new Date(v.data).toLocaleString()}</td>
+      <td>${v.total.toFixed(2)}</td>
+      <td><button class="btn" onclick="abrirFaturaById('${v.id}')">Ver Fatura</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function abrirFaturaById(id) {
+  const venda = vendas.find(v => v.id == id);
+  if(venda) abrirFatura(venda);
+}
+
+// ----------------------------
+// EVENT LISTENERS
+// ----------------------------
+document.addEventListener('DOMContentLoaded', async () => {
+  await fetchProdutos();
+  await fetchConfiguracoes();
+
+  const search = document.getElementById('search');
+  if(search) search.addEventListener('input', e => renderProdutosLista(e.target.value));
+
+  const btnFinalizar = document.getElementById('btn-finalizar');
+  if(btnFinalizar) btnFinalizar.addEventListener('click', finalizarCompra);
 });
-function showLogo(src){ $('logoPreview').src=src; $('logoPreview').style.display='block'; }
-
-$('btn-save-settings')?.addEventListener('click',()=>{
-    conf.nome=$('nome-loja')?.value; conf.endereco=$('endereco')?.value; conf.telefone=$('telefone')?.value;
-    localStorage.setItem(LS_KEYS.CONF,JSON.stringify(conf));
-    alert('Configurações salvas!');
-});
-
-// --- Inicializa ---
-init();
-
-// --- Pesquisa Produtos ---
-$('search')?.addEventListener('input',e=>renderProdutosLista(e.target.value));
