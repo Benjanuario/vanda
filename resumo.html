@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resumo da Compra</title>
+  <link href="style.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans">
+  <header class="p-4 bg-blue-600 text-white flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Resumo da Compra</h1>
+    <a href="vendas.html" class="btn bg-white text-blue-600">Voltar</a>
+  </header>
+  <main class="p-4 bg-white rounded shadow">
+    <h2 class="font-bold mb-2">Produtos Selecionados</h2>
+    <table id="resumo-compra" class="w-full text-left">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Qtd</th>
+          <th>Preço</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="mt-4">
+      <p>Subtotal: <span id="subtotal-resumo">0.00</span></p>
+      <p>Taxa/IVA: <span id="taxa-resumo">0.00</span></p>
+      <p>Total: <span id="total-resumo">0.00</span></p>
+      <button id="confirmar-compra" class="btn mt-2">Confirmar Compra</button>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
