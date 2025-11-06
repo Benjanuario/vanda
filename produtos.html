@@ -2,39 +2,30 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Produtos - Loja Sistema</title>
-<link rel="stylesheet" href="assets/styles.css">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cadastro de Produtos</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-    <h1>Gestão de Produtos</h1>
+  <h1>Cadastro de Produtos</h1>
+  <div class="card" style="margin-top:16px;">
+    <label>Nome</label><input id="p-nome" placeholder="Ex: Caderno A4">
+    <label>Preço (unitário)</label><input id="p-preco" type="number" step="0.01">
+    <label>Quantidade em estoque</label><input id="p-qtd" type="number" value="0">
+    <label>SKU / Código</label><input id="p-sku">
+    <button id="btn-add-prod">Adicionar Produto</button>
+  </div>
 
-    <div class="card">
-        <h3>Adicionar Produto</h3>
-        <label>Nome</label>
-        <input type="text" id="p-nome" placeholder="Ex: Caderno A4">
-        <label>Preço</label>
-        <input type="number" id="p-preco" placeholder="0.00" step="0.01">
-        <label>Quantidade</label>
-        <input type="number" id="p-qtd" placeholder="0">
-        <label>SKU</label>
-        <input type="text" id="p-sku" placeholder="SKU123">
-        <button id="btn-add-prod" class="btn-add" style="margin-top:10px">Adicionar</button>
-    </div>
-
-    <div class="card table-container">
-        <h3>Estoque Atual</h3>
-        <table id="tabela-estoque">
-            <thead>
-                <tr><th>Produto</th><th>Preço</th><th>Quantidade</th><th>Ações</th></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+  <div class="card" style="margin-top:16px;">
+    <h3>Estoque Atual</h3>
+    <table id="tabela-estoque">
+      <thead><tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <a href="index.html"><button style="margin-top:16px;">Voltar ao Menu</button></a>
 </div>
-
-<script src="scripts/storage.js"></script>
-<script src="scripts/produtos.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
