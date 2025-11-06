@@ -1,53 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vendas — Loja</title>
-  <link href="style.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos — Loja</title>
+<link href="style.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 font-sans">
-  <header class="p-4 bg-blue-600 text-white flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Registrar Venda</h1>
-    <a href="index.html" class="btn bg-white text-blue-600">Dashboard</a>
+<body>
+<div class="container fade-in">
+  <header>
+    <h1>Gerenciar Produtos</h1>
+    <nav>
+      <a href="index.html" class="btn">Dashboard</a>
+      <a href="vendas.html" class="btn">Vendas</a>
+      <a href="faturas.html" class="btn">Faturas</a>
+      <a href="configuracoes.html" class="btn">Configurações</a>
+    </nav>
   </header>
-  <main class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-    <section class="bg-white p-4 rounded shadow">
-      <h2 class="font-bold text-lg mb-2">Produtos Disponíveis</h2>
-      <table id="lista-produtos" class="w-full text-left">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Preço</th>
-            <th>Qtd</th>
-            <th>Selecionar</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+
+  <main>
+    <section class="card">
+      <h3>Adicionar Produto</h3>
+      <label>Nome</label><input id="p-nome" placeholder="Ex: Caderno A4">
+      <label>Preço Unitário</label><input id="p-preco" type="number" step="0.01">
+      <label>Quantidade</label><input id="p-qtd" type="number" value="0">
+      <label>SKU</label><input id="p-sku">
+      <button id="btn-add-prod" class="btn">Adicionar Produto</button>
     </section>
-    <section class="bg-white p-4 rounded shadow">
-      <h2 class="font-bold text-lg mb-2">Carrinho</h2>
-      <table id="carrinho" class="w-full text-left">
+
+    <section class="card" style="margin-top:24px;">
+      <h3>Estoque Atual</h3>
+      <table id="tabela-estoque">
         <thead>
-          <tr>
-            <th>Produto</th>
-            <th>Qtd</th>
-            <th>Preço</th>
-            <th>Subtotal</th>
-            <th>Remover</th>
-          </tr>
+          <tr><th>Produto</th><th>Preço</th><th>Quantidade</th><th>Ações</th></tr>
         </thead>
         <tbody></tbody>
       </table>
-      <div class="mt-4">
-        <p>Subtotal: <span id="subtotal">0.00</span></p>
-        <p>Taxa/IVA: <span id="taxa-valor">0.00</span></p>
-        <p>Total: <span id="total">0.00</span></p>
-        <button id="finalizar-venda" class="btn mt-2">Finalizar Compra</button>
-      </div>
     </section>
   </main>
-  <script src="script.js"></script>
+</div>
+
+<script src="script.js"></script>
+<script>
+  renderEstoque(); // inicializar lista de produtos
+</script>
 </body>
 </html>
