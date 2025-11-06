@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faturas — Loja</title>
+<link href="style.css" rel="stylesheet">
+</head>
+<body>
+<div class="container fade-in">
+  <header>
+    <h1>Faturas</h1>
+    <nav>
+      <a href="index.html" class="btn">Dashboard</a>
+      <a href="produtos.html" class="btn">Produtos</a>
+      <a href="vendas.html" class="btn">Vendas</a>
+      <a href="configuracoes.html" class="btn">Configurações</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h3>Vendas Registradas</h3>
+      <table id="tabela-vendas">
+        <thead><tr><th>#</th><th>Data</th><th>Total</th><th>Ações</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script src="script.js"></script>
+<script>
+  renderVendas(); // inicializar tabela de faturas
+</script>
+</body>
+        </html>
