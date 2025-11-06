@@ -1,11 +1,17 @@
-body { font-family: 'Inter', sans-serif; }
-.bg-gray-100 { background: #f4f6f8; }
-.bg-white { background: #fff; }
-.bg-blue-600 { background: #0b74da; }
-.text-white { color: #fff; }
-.text-blue-600 { color: #0b74da; }
-.p-4 { padding: 1rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-4 { margin-top: 1rem; }
-.mt-6 { margin-top: 1.5rem; }
-.rounded { border-radius: 0.
+body { font-family: 'Inter', sans-serif; margin:0; background:#f4f6f8; color:#111; }
+.container { max-width: 1000px; margin: 24px auto; padding: 16px; }
+header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 24px; }
+nav a.btn { display: inline-block; background:#0b74da; color:#fff; padding:10px 18px; margin:6px; border-radius:8px; text-decoration:none; transition:0.3s; }
+nav a.btn:hover { background:#095bb5; transform: scale(1.05); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+.card { background:#fff; padding:20px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.06); text-align:center; transition:0.3s; }
+.card:hover { transform: translateY(-4px); box-shadow:0 10px 20px rgba(0,0,0,0.1); }
+input, select { width:100%; padding:8px; margin:4px 0 12px 0; border:1px solid #ccc; border-radius:6px; }
+button.btn { cursor:pointer; }
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn { from {opacity:0;} to{opacity:1;} }
+table { width:100%; border-collapse:collapse; }
+th, td { padding:12px; border-bottom:1px solid #e2e8f0; text-align:left; }
+th { background:#f1f5f9; }
+.text-right { text-align:right; }
+.totals { margin-top:12px; font-weight:700; text-align:right; }
