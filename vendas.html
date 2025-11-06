@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendas - Loja Sistema</title>
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Carrinho de Vendas</h1>
+
+    <div class="card">
+        <label>Pesquisar Produto</label>
+        <input type="text" id="search" placeholder="Nome ou SKU">
+        <div class="table-container">
+            <table id="tabela-produtos">
+                <thead><tr><th>Produto</th><th>Preço</th><th>Estoque</th><th>Adicionar</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card table-container">
+        <h3>Carrinho</h3>
+        <table id="tabela-carrinho">
+            <thead><tr><th>Produto</th><th>Preço</th><th>Qt</th><th>Subtotal</th><th>Ações</th></tr></thead>
+            <tbody></tbody>
+        </table>
+        <div style="margin-top:10px;">
+            <button id="btn-finalizar" class="btn-print">Finalizar Venda</button>
+            <button id="btn-cancelar" class="btn-delete">Cancelar Venda</button>
+        </div>
+    </div>
+</div>
+
+<script src="scripts/storage.js"></script>
+<script src="scripts/vendas.js"></script>
+</body>
+</html>
