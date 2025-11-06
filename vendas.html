@@ -2,39 +2,44 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vendas - Loja Sistema</title>
-<link rel="stylesheet" href="assets/styles.css">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Realizar Venda</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
-    <h1>Carrinho de Vendas</h1>
+  <h1>Venda de Produtos</h1>
+  
+  <div class="card" style="margin-top:16px;">
+    <label>Pesquisar produto</label>
+    <input id="search" placeholder="Pesquisar por nome ou SKU">
+    <table id="tabela-produtos">
+      <thead><tr><th>Produto</th><th>Preço</th><th>Estoque</th><th>Adicionar</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-    <div class="card">
-        <label>Pesquisar Produto</label>
-        <input type="text" id="search" placeholder="Nome ou SKU">
-        <div class="table-container">
-            <table id="tabela-produtos">
-                <thead><tr><th>Produto</th><th>Preço</th><th>Estoque</th><th>Adicionar</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
+  <div class="card" style="margin-top:16px;">
+    <h3>Carrinho</h3>
+    <table id="tabela-carrinho">
+      <thead><tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Subtotal</th><th>Ações</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="totals">
+      <div>Subtotal: <span id="subtotal">0.00</span></div>
+      <div>Taxa (%): <input id="taxa" type="number" value="17"></div>
+      <div>Total: <span id="total">0.00</span></div>
     </div>
+    <button id="btn-finalizar">Finalizar Venda</button>
+  </div>
 
-    <div class="card table-container">
-        <h3>Carrinho</h3>
-        <table id="tabela-carrinho">
-            <thead><tr><th>Produto</th><th>Preço</th><th>Qt</th><th>Subtotal</th><th>Ações</th></tr></thead>
-            <tbody></tbody>
-        </table>
-        <div style="margin-top:10px;">
-            <button id="btn-finalizar" class="btn-print">Finalizar Venda</button>
-            <button id="btn-cancelar" class="btn-delete">Cancelar Venda</button>
-        </div>
-    </div>
+  <a href="index.html"><button style="margin-top:16px;">Voltar ao Menu</button></a>
 </div>
 
-<script src="scripts/storage.js"></script>
-<script src="scripts/vendas.js"></script>
+<div id="modal" class="modal">
+  <div class="content"></div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
