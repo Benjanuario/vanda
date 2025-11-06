@@ -1,24 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Loja — Dashboard</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Loja</title>
+  <link href="style.css" rel="stylesheet">
 </head>
-<body>
-<div class="container">
-  <h1>Bem-vindo à Loja</h1>
-  <div class="card" style="margin-top:16px;">
-    <h3>Menu</h3>
-    <ul>
-      <li><a href="produtos.html"><button>Cadastro de Produtos</button></a></li>
-      <li><a href="vendas.html"><button>Realizar Venda</button></a></li>
-      <li><a href="faturas.html"><button>Faturas</button></a></li>
-      <li><a href="configuracoes.html"><button>Configurações da Loja</button></a></li>
-    </ul>
-  </div>
-</div>
-<script src="script.js"></script>
+<body class="bg-gray-100 font-sans">
+  <header class="p-4 bg-blue-600 text-white flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Dashboard da Loja</h1>
+  </header>
+  <main class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="card bg-white p-4 rounded shadow">
+      <h2 class="font-bold text-lg">Produtos cadastrados</h2>
+      <p id="total-produtos" class="text-2xl mt-2">0</p>
+      <a href="produtos.html" class="btn mt-4">Gerenciar Produtos</a>
+    </div>
+    <div class="card bg-white p-4 rounded shadow">
+      <h2 class="font-bold text-lg">Vendas do dia</h2>
+      <p id="total-vendas" class="text-2xl mt-2">0</p>
+      <a href="vendas.html" class="btn mt-4">Registrar Venda</a>
+    </div>
+    <div class="card bg-white p-4 rounded shadow">
+      <h2 class="font-bold text-lg">Faturamento total</h2>
+      <p id="total-faturamento" class="text-2xl mt-2">0.00</p>
+      <a href="faturas.html" class="btn mt-4">Ver Faturas</a>
+    </div>
+  </main>
+  <script src="script.js"></script>
+  <script>updateDashboard();</script>
 </body>
 </html>
