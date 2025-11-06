@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Configurações da Loja</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurações — Loja</title>
+  <link href="style.css" rel="stylesheet">
 </head>
-<body>
-<div class="container">
-  <h1>Configurações da Loja</h1>
-  <div class="card" style="margin-top:16px;">
-    <label>Nome da Loja</label><input id="nome-loja">
-    <label>Endereço</label><input id="endereco">
-    <label>Telefone</label><input id="telefone">
-    <div class="logo-placeholder" id="logoBox">Clique para adicionar LOGO<img id="logoPreview" style="display:none"></div>
-    <input type="file" id="logoInput" accept="image/*" style="display:none">
-    <button id="btn-save-settings">Salvar Configurações</button>
-  </div>
-  <a href="index.html"><button style="margin-top:16px;">Voltar ao Menu</button></a>
-</div>
-<script src="script.js"></script>
+<body class="bg-gray-100 font-sans">
+  <header class="p-4 bg-blue-600 text-white flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Configurações da Loja</h1>
+    <a href="index.html" class="btn bg-white text-blue-600">Dashboard</a>
+  </header>
+  <main class="p-4 bg-white rounded shadow grid gap-4">
+    <input type="text" id="nome-loja" placeholder="Nome da Loja" class="input">
+    <input type="text" id="endereco" placeholder="Endereço" class="input">
+    <input type="text" id="telefone" placeholder="Telefone" class="input">
+    <input type="file" id="logo" accept="image/*" class="input">
+    <button id="salvar-config" class="btn">Salvar Configurações</button>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>
